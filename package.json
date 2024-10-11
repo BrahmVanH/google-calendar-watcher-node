@@ -1,25 +1,29 @@
 {
-  "name": "mqt-movers-calendar-watcher",
-  "version": "1.0.0",
-  "description": "a node serverless function that hits a google calendar on a regular interval to check for added events quantity",
-  "main": "index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "brahm van houzen",
-  "license": "MIT",
-  "dependencies": {
-    "@as-integrations/aws-lambda": "^3.1.0",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.1",
-    "serverless-http": "^3.2.0",
-    "typescript": "^5.6.3"
-  },
-  "devDependencies": {
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.7.5",
-    "eslint": "^9.12.0",
-    "nodemon": "^3.1.7",
-    "ts-node": "^10.9.2"
-  }
+	"name": "mqt-movers-calendar-watcher",
+	"version": "1.0.0",
+	"description": "a node serverless function that hits a google calendar on a regular interval to check for added events quantity",
+	"main": "index.ts",
+	"scripts": {
+		"start": "nodemon",
+		"offline": "npm run build:lambda && serverless offline",
+		"dev": "npm run build:lambda && netlify dev",
+		"build:lambda": "npm run bundle && tsc -p lambda/tsconfig.json",
+		"bundle": "ncp ./src ./lambda/bundle"
+	},
+	"author": "brahm van houzen",
+	"license": "MIT",
+	"dependencies": {
+		"@as-integrations/aws-lambda": "^3.1.0",
+		"dotenv": "^16.4.5",
+		"express": "^4.21.1",
+		"serverless-http": "^3.2.0",
+		"typescript": "^5.6.3"
+	},
+	"devDependencies": {
+		"@types/express": "^5.0.0",
+		"@types/node": "^22.7.5",
+		"eslint": "^9.12.0",
+		"nodemon": "^3.1.7",
+		"ts-node": "^10.9.2"
+	}
 }
