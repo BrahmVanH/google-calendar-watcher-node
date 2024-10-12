@@ -4,6 +4,11 @@ import { google, calendar_v3 } from 'googleapis';
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
+interface CheckForNewEventsResponse {
+	newEvent: boolean;
+	event?: calendar_v3.Schema$Event;
+}
+
 function getOAuth2Client() {
 	const oauth2Client = new google.auth.OAuth2(
 		process.env.GOOGLE_CLIENT_ID,
@@ -41,7 +46,7 @@ async function listEvents(auth: OAuth2Client) {
 	return events;
 }
 
-function checkForNewEvents(events: calendar_v3.Schema$Event[]) {
+function checkForNewEvents(events: calendar_v3.Schema$Event[]): CheckForNewEventsResponse {
 	for (const event of events) {
 		if (typeof event.created === 'string') {
 			const createdAt = new Date(event.created).getTime();
@@ -50,11 +55,16 @@ function checkForNewEvents(events: calendar_v3.Schema$Event[]) {
 			const difference = current - createdAt;
 
 			if (difference < 7200) {
-				return true;
+				return {
+					newEvent: true,
+					event: event,
+				};
 			}
 		}
 	}
-	return false;
+	return {
+		newEvent: false,
+	};
 }
 
 // Main execution
@@ -66,10 +76,13 @@ async function checkCalForNewEvents() {
 			throw new Error('No events returned from google');
 		}
 		console.log('events: ', events);
-		const newEventsPresent = checkForNewEvents(events);
-		console.log('new events present: ', newEventsPresent);
+		const response = checkForNewEvents(events);
 		// await listCalendars(oauth2Client);
-		return newEventsPresent;
+		if (response.newEvent) {
+			return response.event;
+		}
+		return;
+
 	} catch (error) {
 		console.error('Error:', error);
 	}
