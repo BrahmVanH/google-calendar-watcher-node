@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { OAuth2Client } from 'google-auth-library';
-import { google } from 'googleapis';
+import { google, calendar_v3 } from 'googleapis';
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
@@ -27,44 +27,62 @@ async function listEvents(auth: OAuth2Client) {
 	const res = await calendar.events.list({
 		calendarId: process.env.GOOGLE_CALENDAR_ID,
 		timeMin: new Date().toISOString(),
-		maxResults: 10,
+		maxResults: 100,
 		singleEvents: true,
 		orderBy: 'startTime',
 	});
 	const events = res.data.items;
 	if (!events || events.length === 0) {
-		console.log('No upcoming events found.');
 		return;
 	}
-	console.log('Upcoming 10 events:');
 	events.forEach((event: any) => {
 		const start = event.start.dateTime || event.start.date;
-		console.log(`${start} - ${event.summary}`);
 	});
+	return events;
 }
 
-async function listCalendars(auth: OAuth2Client) {
-	const calendar = google.calendar({ version: 'v3', auth });
-	const res = await calendar.calendarList.list();
-	const calendars = res.data.items;
-	if (!calendars || calendars.length === 0) {
-		console.log('No calendars found.');
-		return;
+function checkForNewEvents(events: calendar_v3.Schema$Event[]) {
+	for (const event of events) {
+		if (typeof event.created === 'string') {
+			const createdAt = new Date(event.created).getTime();
+			// const current = new Date().getTime();
+			const current = new Date('2024-07-07T21:05:00.000Z').getTime();
+			const difference = current - createdAt;
+
+			if (difference < 7200) {
+				return true;
+			}
+		}
 	}
-	console.log('Calendars:');
-	calendars.forEach((calendar: any) => {
-		console.log(`${calendar.id} - ${calendar.summary}`);
-	});
+	return false;
 }
 
 // Main execution
-async function main() {
+async function checkCalForNewEvents() {
 	try {
 		const oauth2Client = getOAuth2Client();
-		await listEvents(oauth2Client);
+		const events = await listEvents(oauth2Client);
+		if (!events) {
+			throw new Error('No events returned from google');
+		}
+		console.log('events: ', events);
+		const newEventsPresent = checkForNewEvents(events);
+		console.log('new events present: ', newEventsPresent);
 		// await listCalendars(oauth2Client);
+		return newEventsPresent;
 	} catch (error) {
 		console.error('Error:', error);
+	}
+}
+
+async function main() {
+	try {
+		const result = await checkCalForNewEvents();
+		if (result) {
+			console.log('are there new events? : ', result);
+		}
+	} catch (err: any) {
+		console.error('issues with checking calendar: ', err);
 	}
 }
 
