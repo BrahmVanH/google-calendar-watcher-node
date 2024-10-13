@@ -1,4 +1,4 @@
-service: daily-journal-app-api
+service: google-calendar-watcher
 
 provider:
   name: aws
@@ -7,32 +7,18 @@ provider:
   httpApi:
     cors: true
 
-plugins:
+plugins: 
+  -serverless-plugin-typescriptS
   - serverless-offline
-
-custom:
-  hooks:
-    before:deploy:runBuild:
-      commands: npm run build:lambda
-
-package:
-  patterns:
-    - 'lambda/dist/**'
-    - 'node_modules/**'
-    - '!src/**'
-    - '!.env*'
-    - '!tsconfig.json'
-    - '!codegen.yml'
-    - '!schema.graphql'
-    - '!.gitignore'
 
 functions:
   graphql:
-    handler: lambda/dist/server.handler
+    handler: src/index.handler
     events:
-      # - httpApi:
-      #     path: /
-      #     method: POST
+ 
       - httpApi:
           path: /
           method: GET
+
+package:
+  individually: true

@@ -31,3 +31,5 @@ lambda/bundle
 
 
 refresh-scrift.js
+# Sentry Config File
+.sentryclirc

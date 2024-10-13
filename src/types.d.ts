@@ -6,3 +6,10 @@ export interface RelevantEventInfo {
 		timeZone: string;
 	};
 }
+
+
+
+export interface CheckForNewEventsResponse {
+	newEvent: boolean;
+	event?: calendar_v3.Schema$Event;
+}

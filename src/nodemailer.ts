@@ -1,6 +1,6 @@
+import * as Sentry from '@sentry/node';
 import nodemailer from 'nodemailer';
 import { RelevantEventInfo } from './types';
-
 
 export const sendNewEventEmail = async (relevantEventInfo: RelevantEventInfo) => {
 	const transporter = nodemailer.createTransport({
@@ -25,10 +25,6 @@ export const sendNewEventEmail = async (relevantEventInfo: RelevantEventInfo) =>
 	try {
 		const email = await transporter.sendMail(mailOptions);
 
-		if (email) {
-			console.log('Email sent:', email);
-		}
-
 		if (!email) {
 			throw new Error('Error sending email');
 		}
@@ -36,6 +32,7 @@ export const sendNewEventEmail = async (relevantEventInfo: RelevantEventInfo) =>
 		return email;
 	} catch (error) {
 		console.error(error);
+		Sentry.captureException(error);
 		throw new Error('Error sending email');
 	}
 };
