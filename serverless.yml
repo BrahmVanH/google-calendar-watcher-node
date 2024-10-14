@@ -6,19 +6,40 @@ provider:
   region: us-east-1
   httpApi:
     cors: true
+  environment:
+    SENTRY_DSN: ${\google-calendar-watcher\sentry-dsn}
+    SENTRY_AUTH_TOKEN: ${\google-calendar-watcher\sentry-auth-token}
+    NODE_ENV: production
 
-plugins: 
-  -serverless-plugin-typescriptS
-  - serverless-offline
-
-functions:
-  graphql:
-    handler: src/index.handler
-    events:
- 
-      - httpApi:
-          path: /
-          method: GET
+custom:
+  sentry:
+    dsn: ${self:provider.environment.SENTRY_DSN}
+    authToken: ${self:provider.environment.SENTRY_AUTH_TOKEN}
+    organization: your-sentry-org
+    project: your-sentry-project
+  hooks:
+    before:deploy:runBuild:
+      commands: npm run build
 
 package:
   individually: true
+  patterns:
+    - 'lambda/dist/**'
+    - 'layer/node_modules.zip'
+    - 'node_modules/**'
+    - '!lambda/bundle/**'
+    - '!src/**'
+    - '!.env*'
+    - '!tsconfig.json'
+    - '!.gitignore'
+
+plugins:
+  - serverless-offline
+  - serverless-sentry
+
+functions:
+  google-calendar-watcher:
+    handler: lambda/dist/index.handler
+    events:
+      - schedule: rate(2 hours)
+      - httpApi: 'GET /'

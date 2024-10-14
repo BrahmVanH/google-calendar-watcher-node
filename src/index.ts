@@ -6,45 +6,58 @@ import express, { Request, Response } from 'express';
 import serverless from 'serverless-http';
 
 import dotenv from 'dotenv';
-import { CheckForNewEventsResponse } from './types';
+import { CheckForNewEventAndEmailAboutItResponse } from './types';
 import checkCalForNewEvents from './googleCalendar';
 import { sendNewEventEmail } from './nodemailer';
+import { calendar_v3 } from 'googleapis';
 
 dotenv.config();
 
 const app = express();
 
-async function checkForNewEventsAndEmailAboutIt() {
+async function checkForNewEventsAndEmailAboutIt(): Promise<CheckForNewEventAndEmailAboutItResponse> {
 	try {
-		const response: CheckForNewEventsResponse = await checkCalForNewEvents();
-		if (response.newEvent) {
+		const response: calendar_v3.Schema$Event | null = await checkCalForNewEvents();
+		if (response) {
 			const event = {
-				created: response.event.created,
-				summary: response.event.summary,
-				start: {
-					dateTime: response.event.start.dateTime,
-					timeZone: response.event.start.timeZone,
-				},
+				created: response.created ?? '',
+				summary: response.summary ?? '',
+				start: (response?.start?.dateTime as string) ?? (response?.start as string) ?? '',
+				end: (response?.end?.dateTime as string) ?? (response?.end as string) ?? '',
 			};
 
 			const email = await sendNewEventEmail(event);
 			if (!email) {
-				throw new Error('No email response');
+				return {
+					status: 500,
+					message: 'Error in sending email',
+				};
 			}
+
+			return {
+				status: 200,
+				message: 'Email sent successfully',
+			};
 		}
+
+		return {
+			status: 200,
+			message: 'No new events found',
+		};
 	} catch (err: any) {
 		console.error(err);
 		Sentry.captureException(err);
 		throw new Error('Error in checking for and emailing new event');
 	}
-
-	return null;
 }
 
 app.use('/', async function (req: Request, res: Response) {
 	try {
-		await checkForNewEventsAndEmailAboutIt();
-		res.send('Success');
+		const response = await checkForNewEventsAndEmailAboutIt();
+		if (response.status === 500) {
+			throw new Error('Error in sending email');
+		}
+		res.send(response.message);
 	} catch (err: any) {
 		console.error(err);
 		Sentry.captureException(err);

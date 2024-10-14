@@ -19,7 +19,7 @@ export const sendNewEventEmail = async (relevantEventInfo: RelevantEventInfo) =>
 		from: process.env.SMTP_USER ?? '',
 		to: process.env.SMTP_USER ?? '',
 		subject: `New event in MQT Movers calendar`,
-		text: `Event: \n		created: ${relevantEventInfo.created}\n			summary: ${relevantEventInfo.summary}\n			Start:\n			time: ${relevantEventInfo.start.dateTime}\n			 Timezone: ${relevantEventInfo.start.timeZone}`,
+		text: `Event: \n		created: ${relevantEventInfo.created}\n			summary: ${relevantEventInfo.summary}\n			Start:\n			time: ${relevantEventInfo.start}`,
 	};
 
 	try {

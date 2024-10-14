@@ -1,33 +1,17 @@
 import 'dotenv/config';
 import * as Sentry from '@sentry/node';
-import { OAuth2Client } from 'google-auth-library';
 import { google, calendar_v3 } from 'googleapis';
 
+import { getAuth } from './auth';
 import { CheckForNewEventsResponse } from './types';
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
-function getOAuth2Client() {
-	const oauth2Client = new google.auth.OAuth2(
-		process.env.GOOGLE_CLIENT_ID,
-		process.env.GOOGLE_CLIENT_SECRET,
-		process.env.GOOGLE_REDIRECT_URI // Usually http://localhost:3000/oauth2callback for local dev
-	);
-
-	if (!process.env.GOOGLE_REFRESH_TOKEN) {
-		console.log('no refresh token');
-	}
-	oauth2Client.setCredentials({
-		refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-	});
-
-	return oauth2Client;
-}
-
 // * Lists the next 10 events on the user's primary calendar.
 //  */
-async function listEvents(auth: OAuth2Client) {
-	const calendar = google.calendar({ version: 'v3', auth });
+async function listEvents(auth: any) {
+	let calendar = google.calendar({ version: 'v3', auth });
+
 	const res = await calendar.events.list({
 		calendarId: process.env.GOOGLE_CALENDAR_ID,
 		timeMin: new Date().toISOString(),
@@ -49,7 +33,7 @@ function checkForNewEvents(events: calendar_v3.Schema$Event[]): CheckForNewEvent
 		if (typeof event.created === 'string') {
 			const createdAt = new Date(event.created).getTime();
 			const current = new Date().getTime();
-		
+
 			const difference = current - createdAt;
 
 			if (difference < 9000) {
@@ -60,6 +44,7 @@ function checkForNewEvents(events: calendar_v3.Schema$Event[]): CheckForNewEvent
 			}
 		}
 	}
+
 	return {
 		newEvent: false,
 	};
@@ -68,18 +53,17 @@ function checkForNewEvents(events: calendar_v3.Schema$Event[]): CheckForNewEvent
 // Main execution
 export default async function checkCalForNewEvents() {
 	try {
-		const oauth2Client = getOAuth2Client();
+		const oauth2Client = getAuth();
 		const events = await listEvents(oauth2Client);
 		if (!events) {
 			throw new Error('No events returned from google');
 		}
-		console.log('events: ', events);
 		const response = checkForNewEvents(events);
-		// await listCalendars(oauth2Client);
 		if (response.newEvent) {
 			return response.event;
+		} else {
+			return;
 		}
-		return;
 	} catch (error) {
 		console.error('Error:', error);
 		Sentry.captureException(error);

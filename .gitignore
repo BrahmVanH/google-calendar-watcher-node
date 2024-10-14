@@ -10,6 +10,8 @@ node_modules
 
 # production
 /build
+lambda/bundle
+lambda/dist
 
 # misc
 .DS_Store
@@ -23,7 +25,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .vercel
-lambda/bundle
 
 
 # Local Netlify folder

@@ -1,37 +1,39 @@
 {
-  "name": "mqt-movers-calendar-watcher",
-  "version": "1.0.0",
-  "description": "a node serverless function that hits a google calendar on a regular interval to check for added events quantity",
-  "main": "index.ts",
-  "scripts": {
-    "start": "nodemon",
-    "build": "tsc && npm run sentry:sourcemaps",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org brahm-van-houzen-studio --project google-calenda-watcher-node ../../../../.. && sentry-cli sourcemaps upload --org brahm-van-houzen-studio --project google-calenda-watcher-node ../../../../.."
-  },
-  "author": "brahm van houzen",
-  "license": "MIT",
-  "dependencies": {
-    "@as-integrations/aws-lambda": "^3.1.0",
-    "@google-cloud/local-auth": "^2.1.0",
-    "@sentry/cli": "^2.37.0",
-    "@sentry/node": "^8.34.0",
-    "@sentry/profiling-node": "^8.34.0",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.1",
-    "googleapis": "^105.0.0",
-    "ncp": "^2.0.0",
-    "nodemailer": "^6.9.15",
-    "serverless-http": "^3.2.0",
-    "typescript": "^5.6.3"
-  },
-  "devDependencies": {
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.7.5",
-    "@types/nodemailer": "^6.4.16",
-    "eslint": "^9.12.0",
-    "nodemon": "^3.1.7",
-    "serverless-offline": "^14.3.2",
-    "serverless-plugin-typescript": "^2.1.5",
-    "ts-node": "^10.9.2"
-  }
+	"name": "mqt-movers-calendar-watcher",
+	"version": "1.0.0",
+	"description": "a node serverless function that hits a google calendar on a regular interval to check for added events quantity",
+	"main": "index.ts",
+	"scripts": {
+		"start": "nodemon",
+		"build": "npm run bundle && tsc -p lambda/tsconfig.json && npm run sentry:sourcemaps",
+		"bundle": "ncp ./src ./lambda/bundle",
+		"deploy": "npm run build &&  sls deploy",
+		"sentry:sourcemaps": "sentry-cli sourcemaps inject --org brahm-van-houzen-studio --project google-calenda-watcher-node ./lambda/dist && sentry-cli sourcemaps upload --org brahm-van-houzen-studio --project google-calenda-watcher-node ./lambda/dist"
+	},
+	"author": "brahm van houzen",
+	"license": "MIT",
+	"dependencies": {
+		"@as-integrations/aws-lambda": "^3.1.0",
+		"@google-cloud/local-auth": "2.1.1",
+		"@sentry/cli": "^2.37.0",
+		"@sentry/node": "^8.34.0",
+		"@sentry/profiling-node": "^8.34.0",
+		"dotenv": "^16.4.5",
+		"express": "^5.0.1",
+		"googleapis": "^144.0.0",
+		"ncp": "^2.0.0",
+		"nodemailer": "^6.9.15",
+		"serverless-http": "^3.2.0",
+		"typescript": "^5.6.3"
+	},
+	"devDependencies": {
+		"@types/express": "^5.0.0",
+		"@types/node": "^22.7.5",
+		"@types/nodemailer": "^6.4.16",
+		"eslint": "^9.12.0",
+		"nodemon": "^3.1.7",
+		"serverless-offline": "^13.8.1",
+		"serverless-sentry": "^2.5.3",
+		"ts-node": "^10.9.2"
+	}
 }
