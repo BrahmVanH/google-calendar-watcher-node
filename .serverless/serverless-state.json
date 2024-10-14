@@ -182,7 +182,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/google-calendar-watcher/dev/1728932666855-2024-10-14T19:04:26.855Z/google-calendar-watcher.zip"
+                "S3Key": "serverless/google-calendar-watcher/dev/1728933531346-2024-10-14T19:18:51.346Z/google-calendar-watcher.zip"
               },
               "Handler": "lambda/dist/index.handler",
               "Runtime": "nodejs16.x",
@@ -208,14 +208,14 @@
               "GoogleDashcalendarDashwatcherLogGroup"
             ]
           },
-          "GoogleDashcalendarDashwatcherLambdaVersionhlV9XyugNk31e5SODgjtzFVcgKDIa45MWinvGeLQUk": {
+          "GoogleDashcalendarDashwatcherLambdaVersionj9Rqd2TnzKaoUgDYOAEmcJXc7GjqCv4S66mcQ16nbY4": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GoogleDashcalendarDashwatcherLambdaFunction"
               },
-              "CodeSha256": "arbJVM54EA5urKksuv0zAbCZzoiJLvWMDAxTbe5AxAM="
+              "CodeSha256": "FPBe8Cis8EGSCbsy+yU8fJ2BhAAeCZUgn3iCoOVeAs4="
             }
           },
           "GoogleDashcalendarDashwatcherEventsRuleSchedule1": {
@@ -378,7 +378,7 @@
           "GoogleDashcalendarDashwatcherLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GoogleDashcalendarDashwatcherLambdaVersionhlV9XyugNk31e5SODgjtzFVcgKDIa45MWinvGeLQUk"
+              "Ref": "GoogleDashcalendarDashwatcherLambdaVersionj9Rqd2TnzKaoUgDYOAEmcJXc7GjqCv4S66mcQ16nbY4"
             },
             "Export": {
               "Name": "sls-google-calendar-watcher-dev-GoogleDashcalendarDashwatcherLambdaFunctionQualifiedArn"
@@ -547,7 +547,7 @@
         "timeout": 6,
         "runtime": "nodejs16.x",
         "vpc": {},
-        "versionLogicalId": "GoogleDashcalendarDashwatcherLambdaVersionhlV9XyugNk31e5SODgjtzFVcgKDIa45MWinvGeLQUk"
+        "versionLogicalId": "GoogleDashcalendarDashwatcherLambdaVersionj9Rqd2TnzKaoUgDYOAEmcJXc7GjqCv4S66mcQ16nbY4"
       }
     },
     "configValidationMode": "warn",
@@ -573,7 +573,7 @@
           "!.gitignore"
         ],
         "artifactsS3KeyDirname": "serverless/google-calendar-watcher/dev/code-artifacts",
-        "artifactDirectoryName": "serverless/google-calendar-watcher/dev/1728932666855-2024-10-14T19:04:26.855Z"
+        "artifactDirectoryName": "serverless/google-calendar-watcher/dev/1728933531346-2024-10-14T19:18:51.346Z"
       },
       "plugins": {
         "$ref": "$[\"service\"][\"plugins\"]"
@@ -582,12 +582,13 @@
         "$ref": "$[\"service\"][\"functions\"]"
       }
     },
-    "layers": {},
-    "isDashboardMonitoringPreconfigured": false
+    "appId": null,
+    "orgId": null,
+    "layers": {}
   },
   "package": {
     "individually": true,
-    "artifactDirectoryName": "serverless/google-calendar-watcher/dev/1728932666855-2024-10-14T19:04:26.855Z",
+    "artifactDirectoryName": "serverless/google-calendar-watcher/dev/1728933531346-2024-10-14T19:18:51.346Z",
     "artifact": ""
   }
 }
