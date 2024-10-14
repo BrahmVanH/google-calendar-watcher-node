@@ -34,3 +34,6 @@ yarn-error.log*
 refresh-scrift.js
 # Sentry Config File
 .sentryclirc
+
+.serverless/google-calendar-watcher.zip
+/.serverless/google-calendar-watcher.zip
