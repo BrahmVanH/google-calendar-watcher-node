@@ -42,4 +42,6 @@ functions:
     handler: lambda/dist/index.handler
     events:
       - schedule: rate(2 hours)
-      - httpApi: 'GET /'
+      - httpApi:
+        method: POST
+        path: /

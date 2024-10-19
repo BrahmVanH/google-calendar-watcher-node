@@ -1,5 +1,3 @@
-import '../instrument';
-
 import * as Sentry from '@sentry/node';
 
 import express, { Request, Response } from 'express';
@@ -12,6 +10,20 @@ import { sendNewEventEmail } from './nodemailer';
 import { calendar_v3 } from 'googleapis';
 
 dotenv.config();
+
+const { nodeProfilingIntegration } = require('@sentry/profiling-node');
+
+if (process.env.NODE_ENV === 'production') {
+	Sentry.init({
+		dsn: process.env.SENTRY_DNS ?? '',
+		integrations: [nodeProfilingIntegration()],
+		// Tracing
+		tracesSampleRate: 1.0, //  Capture 100% of the transactions
+
+		// Set sampling rate for profiling - this is relative to tracesSampleRate
+		profilesSampleRate: 1.0,
+	});
+}
 
 const app = express();
 
@@ -57,6 +69,7 @@ app.use('/', async function (req: Request, res: Response) {
 		if (response.status === 500) {
 			throw new Error('Error in sending email');
 		}
+		console.log('response.message', response.message);
 		res.send(response.message);
 	} catch (err: any) {
 		console.error(err);
