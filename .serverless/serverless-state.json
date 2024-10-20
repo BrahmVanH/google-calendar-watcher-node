@@ -182,7 +182,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/google-calendar-watcher/dev/1728933531346-2024-10-14T19:18:51.346Z/google-calendar-watcher.zip"
+                "S3Key": "serverless/google-calendar-watcher/dev/1729447469869-2024-10-20T18:04:29.869Z/google-calendar-watcher.zip"
               },
               "Handler": "lambda/dist/index.handler",
               "Runtime": "nodejs16.x",
@@ -208,14 +208,14 @@
               "GoogleDashcalendarDashwatcherLogGroup"
             ]
           },
-          "GoogleDashcalendarDashwatcherLambdaVersionj9Rqd2TnzKaoUgDYOAEmcJXc7GjqCv4S66mcQ16nbY4": {
+          "GoogleDashcalendarDashwatcherLambdaVersionpxZjXHF16QPHS6aY2FJzBCpX59HGbqArgp79mJ6zY": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GoogleDashcalendarDashwatcherLambdaFunction"
               },
-              "CodeSha256": "FPBe8Cis8EGSCbsy+yU8fJ2BhAAeCZUgn3iCoOVeAs4="
+              "CodeSha256": "bCKAxK3ZhL1GeT0eEyxdFDjrjzagjuHzec+8nDRV34k="
             }
           },
           "GoogleDashcalendarDashwatcherEventsRuleSchedule1": {
@@ -254,116 +254,6 @@
                 ]
               }
             }
-          },
-          "HttpApi": {
-            "Type": "AWS::ApiGatewayV2::Api",
-            "Properties": {
-              "Name": "dev-google-calendar-watcher",
-              "ProtocolType": "HTTP",
-              "CorsConfiguration": {
-                "AllowHeaders": [
-                  "Content-Type",
-                  "X-Amz-Date",
-                  "Authorization",
-                  "X-Api-Key",
-                  "X-Amz-Security-Token",
-                  "X-Amz-User-Agent",
-                  "X-Amzn-Trace-Id"
-                ],
-                "AllowMethods": [
-                  "OPTIONS",
-                  "GET"
-                ],
-                "AllowOrigins": [
-                  "*"
-                ]
-              }
-            }
-          },
-          "HttpApiStage": {
-            "Type": "AWS::ApiGatewayV2::Stage",
-            "Properties": {
-              "ApiId": {
-                "Ref": "HttpApi"
-              },
-              "StageName": "$default",
-              "AutoDeploy": true,
-              "DefaultRouteSettings": {
-                "DetailedMetricsEnabled": false
-              }
-            }
-          },
-          "GoogleDashcalendarDashwatcherLambdaPermissionHttpApi": {
-            "Type": "AWS::Lambda::Permission",
-            "Properties": {
-              "FunctionName": {
-                "Fn::GetAtt": [
-                  "GoogleDashcalendarDashwatcherLambdaFunction",
-                  "Arn"
-                ]
-              },
-              "Action": "lambda:InvokeFunction",
-              "Principal": "apigateway.amazonaws.com",
-              "SourceArn": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":execute-api:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":",
-                    {
-                      "Ref": "HttpApi"
-                    },
-                    "/*"
-                  ]
-                ]
-              }
-            }
-          },
-          "HttpApiIntegrationGoogleDashcalendarDashwatcher": {
-            "Type": "AWS::ApiGatewayV2::Integration",
-            "Properties": {
-              "ApiId": {
-                "Ref": "HttpApi"
-              },
-              "IntegrationType": "AWS_PROXY",
-              "IntegrationUri": {
-                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GoogleDashcalendarDashwatcherLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
-              },
-              "PayloadFormatVersion": "2.0",
-              "TimeoutInMillis": 30000
-            }
-          },
-          "HttpApiRouteGet": {
-            "Type": "AWS::ApiGatewayV2::Route",
-            "Properties": {
-              "ApiId": {
-                "Ref": "HttpApi"
-              },
-              "RouteKey": "GET /",
-              "Target": {
-                "Fn::Join": [
-                  "/",
-                  [
-                    "integrations",
-                    {
-                      "Ref": "HttpApiIntegrationGoogleDashcalendarDashwatcher"
-                    }
-                  ]
-                ]
-              }
-            },
-            "DependsOn": "HttpApiIntegrationGoogleDashcalendarDashwatcher"
           }
         },
         "Outputs": {
@@ -378,44 +268,10 @@
           "GoogleDashcalendarDashwatcherLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GoogleDashcalendarDashwatcherLambdaVersionj9Rqd2TnzKaoUgDYOAEmcJXc7GjqCv4S66mcQ16nbY4"
+              "Ref": "GoogleDashcalendarDashwatcherLambdaVersionpxZjXHF16QPHS6aY2FJzBCpX59HGbqArgp79mJ6zY"
             },
             "Export": {
               "Name": "sls-google-calendar-watcher-dev-GoogleDashcalendarDashwatcherLambdaFunctionQualifiedArn"
-            }
-          },
-          "HttpApiId": {
-            "Description": "Id of the HTTP API",
-            "Value": {
-              "Ref": "HttpApi"
-            },
-            "Export": {
-              "Name": "sls-google-calendar-watcher-dev-HttpApiId"
-            }
-          },
-          "HttpApiUrl": {
-            "Description": "URL of the HTTP API",
-            "Value": {
-              "Fn::Join": [
-                "",
-                [
-                  "https://",
-                  {
-                    "Ref": "HttpApi"
-                  },
-                  ".execute-api.",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  ".",
-                  {
-                    "Ref": "AWS::URLSuffix"
-                  }
-                ]
-              ]
-            },
-            "Export": {
-              "Name": "sls-google-calendar-watcher-dev-HttpApiUrl"
             }
           }
         }
@@ -530,9 +386,9 @@
             "schedule": "rate(2 hours)"
           },
           {
-            "httpApi": "GET /",
-            "resolvedMethod": "GET",
-            "resolvedPath": "/"
+            "method": "POST",
+            "path": "/",
+            "httpApi": null
           }
         ],
         "name": "google-calendar-watcher-dev-google-calendar-watcher",
@@ -547,7 +403,7 @@
         "timeout": 6,
         "runtime": "nodejs16.x",
         "vpc": {},
-        "versionLogicalId": "GoogleDashcalendarDashwatcherLambdaVersionj9Rqd2TnzKaoUgDYOAEmcJXc7GjqCv4S66mcQ16nbY4"
+        "versionLogicalId": "GoogleDashcalendarDashwatcherLambdaVersionpxZjXHF16QPHS6aY2FJzBCpX59HGbqArgp79mJ6zY"
       }
     },
     "configValidationMode": "warn",
@@ -573,7 +429,7 @@
           "!.gitignore"
         ],
         "artifactsS3KeyDirname": "serverless/google-calendar-watcher/dev/code-artifacts",
-        "artifactDirectoryName": "serverless/google-calendar-watcher/dev/1728933531346-2024-10-14T19:18:51.346Z"
+        "artifactDirectoryName": "serverless/google-calendar-watcher/dev/1729447469869-2024-10-20T18:04:29.869Z"
       },
       "plugins": {
         "$ref": "$[\"service\"][\"plugins\"]"
@@ -582,13 +438,12 @@
         "$ref": "$[\"service\"][\"functions\"]"
       }
     },
-    "appId": null,
-    "orgId": null,
-    "layers": {}
+    "layers": {},
+    "isDashboardMonitoringPreconfigured": false
   },
   "package": {
     "individually": true,
-    "artifactDirectoryName": "serverless/google-calendar-watcher/dev/1728933531346-2024-10-14T19:18:51.346Z",
+    "artifactDirectoryName": "serverless/google-calendar-watcher/dev/1729447469869-2024-10-20T18:04:29.869Z",
     "artifact": ""
   }
 }
