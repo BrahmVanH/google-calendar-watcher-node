@@ -2,7 +2,7 @@ import 'dotenv/config';
 import * as Sentry from '@sentry/node';
 import { google, calendar_v3 } from 'googleapis';
 
-import { getAuth } from './auth';
+import { getAuth, getJwtClient } from './auth';
 import { CheckForNewEventsResponse } from './types';
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
@@ -10,10 +10,11 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 // * Lists the next 10 events on the user's primary calendar.
 //  */
 async function listEvents(auth: any) {
-	let calendar = google.calendar({ version: 'v3', auth });
+	let calendar = google.calendar({ version: 'v3' });
 
 	const res = await calendar.events.list({
 		calendarId: process.env.GOOGLE_CALENDAR_ID,
+		auth: auth,
 		timeMin: new Date().toISOString(),
 		maxResults: 100,
 		singleEvents: true,
@@ -53,8 +54,10 @@ function checkForNewEvents(events: calendar_v3.Schema$Event[]): CheckForNewEvent
 // Main execution
 export default async function checkCalForNewEvents() {
 	try {
-		const oauth2Client = getAuth();
-		const events = await listEvents(oauth2Client);
+		// const oauth2Client = getAuth();
+		const jwtClient = getJwtClient();
+		// const events = await listEvents(oauth2Client);
+		const events = await listEvents(jwtClient);
 		if (!events) {
 			throw new Error('No events returned from google');
 		}
@@ -69,3 +72,5 @@ export default async function checkCalForNewEvents() {
 		Sentry.captureException(error);
 	}
 }
+
+checkCalForNewEvents();

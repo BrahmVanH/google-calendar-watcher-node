@@ -15,4 +15,24 @@ export function getAuth() {
 	return client;
 }
 
-
+export function getJwtClient() {
+	console.log('Getting JWT client');
+	const clientEmail = process.env.GOOGLE_CLIENT_EMAIL ?? '';
+	const privateKey = process.env.GOOGLE_PRIVATE_KEY ?? '';
+	if (!clientEmail || !privateKey) {
+		throw new Error('Missing environment variables for Google JWT');
+	}
+	console.log('Creating JWT client');
+	const jwtClient = new google.auth.JWT(
+		clientEmail,
+		undefined,
+		// Note: Make sure to handle newlines in the private key
+		privateKey.replace(/\\n/g, '\n'),
+		['https://www.googleapis.com/auth/calendar.readonly']
+	);
+	if (!jwtClient) {
+		throw new Error('Failed to authenticate JWT client');
+	}
+	console.log('Returning JWT client');
+	return jwtClient;
+}
