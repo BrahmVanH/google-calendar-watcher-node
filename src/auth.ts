@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import { google } from 'googleapis';
 
 export function getAuth() {
@@ -20,9 +21,9 @@ export function getJwtClient() {
 	const clientEmail = process.env.GOOGLE_CLIENT_EMAIL ?? '';
 	const privateKey = process.env.GOOGLE_PRIVATE_KEY ?? '';
 	if (!clientEmail || !privateKey) {
+		Sentry.captureMessage('Missing environment variables for Google JWT');
 		throw new Error('Missing environment variables for Google JWT');
 	}
-	console.log('Creating JWT client');
 	const jwtClient = new google.auth.JWT(
 		clientEmail,
 		undefined,
@@ -31,6 +32,7 @@ export function getJwtClient() {
 		['https://www.googleapis.com/auth/calendar.readonly']
 	);
 	if (!jwtClient) {
+		Sentry.captureMessage('Failed to authenticate JWT client');
 		throw new Error('Failed to authenticate JWT client');
 	}
 	console.log('Returning JWT client');
