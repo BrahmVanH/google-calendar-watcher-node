@@ -1,9 +1,11 @@
-import 'dotenv/config';
 import * as Sentry from '@sentry/node';
 import { google, calendar_v3 } from 'googleapis';
+import dotenv from 'dotenv';
 
-import { getAuth, getJwtClient } from './auth';
+import { getJwtClient } from './auth';
 import { CheckForNewEventsResponse } from './types';
+
+dotenv.config();
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
@@ -54,9 +56,7 @@ function checkForNewEvents(events: calendar_v3.Schema$Event[]): CheckForNewEvent
 // Main execution
 export default async function checkCalForNewEvents() {
 	try {
-		// const oauth2Client = getAuth();
 		const jwtClient = getJwtClient();
-		// const events = await listEvents(oauth2Client);
 		const events = await listEvents(jwtClient);
 		if (!events) {
 			throw new Error('No events returned from google');
@@ -72,5 +72,3 @@ export default async function checkCalForNewEvents() {
 		Sentry.captureException(error);
 	}
 }
-
-checkCalForNewEvents();
